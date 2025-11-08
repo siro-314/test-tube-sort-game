@@ -1,0 +1,27 @@
+.game-board {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  min-height: 400px;
+}
+
+.tubes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .tubes-container {
+    gap: 8px;
+    max-width: 100%;
+  }
+  
+  .test-tube {
+    padding: 2px;
+  }
+}

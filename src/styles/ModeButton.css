@@ -1,0 +1,148 @@
+.mode-button-wrapper {
+  width: 100%;
+}
+
+.tube-button {
+  width: 100%;
+  min-height: 100px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  transition: all 0.3s ease;
+}
+
+.tube-button:hover {
+  transform: translateY(-4px);
+}
+
+/* 試験管本体（横向き） */
+.tube-button-body {
+  width: 540px;
+  height: 90px;
+  border: 3px solid rgba(139, 115, 85, 0.8);
+  border-radius: 8px 8px 20px 20px;
+  /* 右側を丸く（試験管の底） */
+  border-top-right-radius: 45px;
+  border-bottom-right-radius: 45px;
+  /* 左側はやや角張る（試験管の口） */
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  
+  background: linear-gradient(to bottom, 
+    rgba(255,255,255,0.3) 0%, 
+    rgba(255,255,255,0.05) 50%,
+    rgba(200,200,200,0.15) 100%
+  );
+  
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  
+  box-shadow: 
+    inset 0 -3px 8px rgba(255,255,255,0.4),
+    inset 0 3px 8px rgba(0,0,0,0.1),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ガラスのハイライト（縦のライン） */
+.tube-button-body::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: linear-gradient(to bottom, 
+    rgba(255,255,255,0.5), 
+    rgba(255,255,255,0)
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 液体セグメント */
+.tube-button-segment {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  box-shadow: none;
+  border: none;
+  border-top-right-radius: 42px;
+  border-bottom-right-radius: 42px;
+  border-top-left-radius: 9px;
+  border-bottom-left-radius: 9px;
+}
+
+/* テキスト情報（試験管内に配置） */
+.tube-button-info {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  padding: 16px 24px;
+  justify-content: center;
+}
+
+.tube-button-title {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #333;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+}
+
+.tube-button-desc {
+  font-size: 1.05em;
+  color: #555;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+}
+
+/* RTAサブメニュー内での調整 */
+.rta-submenu .tube-button-body {
+  width: 420px;
+  height: 75px;
+}
+
+/* 気泡アニメーション（重力方向=上） */
+@keyframes bubbleUp {
+  0% {
+    bottom: 10%;
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  10% {
+    opacity: 0.7;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    bottom: 95%;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.5);
+  }
+}
+
+.tube-button-bubble {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: bubbleUp 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* RTAサブメニュー内での調整 */
+.rta-submenu .tube-button-body {
+  width: 420px;
+  height: 75px;
+}

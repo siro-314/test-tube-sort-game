@@ -1,0 +1,73 @@
+.game {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* 空き試験管追加アイコン */
+.extra-tube-icon {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(39, 174, 96, 0.4);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.extra-tube-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
+}
+
+.extra-tube-icon:active {
+  transform: scale(0.95);
+}
+
+.tube-icon {
+  font-size: 2.5em;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 28px;
+  height: 28px;
+  background: #E74C3C;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85em;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .extra-tube-icon {
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+  }
+  
+  .tube-icon {
+    font-size: 2em;
+  }
+  
+  .badge {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75em;
+  }
+}

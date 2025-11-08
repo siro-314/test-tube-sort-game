@@ -1,0 +1,140 @@
+/* デイリーボーナス縦向き試験管 */
+.daily-bonus-tube-container {
+  position: fixed;
+  z-index: 50;
+}
+
+/* スマホ・タブレット縦 */
+@media (max-width: 768px) {
+  .daily-bonus-tube-container {
+    top: 160px;
+    right: 0px;
+  }
+  .bonus-tube-vertical {
+    width: 75px;
+    height: 440px;
+  }
+}
+
+/* PC・タブレット横 */
+@media (min-width: 769px) {
+  .daily-bonus-tube-container {
+    top: 193px;
+    right: 330px;
+  }
+  .bonus-tube-vertical {
+    width: 75px;
+    height: 472px;
+  }
+}
+
+.bonus-tube-vertical {
+  border: 3px solid rgba(139, 115, 85, 0.7);
+  border-radius: 12px 12px 42px 42px;
+  background: linear-gradient(135deg, 
+    rgba(255,255,255,0.25) 0%, 
+    rgba(255,255,255,0.05) 50%,
+    rgba(200,200,200,0.15) 100%
+  );
+  display: flex;
+  flex-direction: column-reverse;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 
+    inset -3px 0 8px rgba(255,255,255,0.4),
+    inset 3px 0 8px rgba(0,0,0,0.1),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ガラスのハイライト */
+.bonus-tube-vertical::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8px;
+  width: 16px;
+  height: 100%;
+  background: linear-gradient(to right, 
+    rgba(255,255,255,0.5), 
+    rgba(255,255,255,0)
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+.bonus-water-vertical {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-bottom-left-radius: 39px;
+  border-bottom-right-radius: 39px;
+  transition: height 1s ease;
+}
+
+/* 気泡アニメーション（下から上へ） */
+@keyframes bonusBubble {
+  0% {
+    bottom: 5%;
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  10% {
+    opacity: 0.8;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    bottom: 95%;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.5);
+  }
+}
+
+.bonus-bubble {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  animation: bonusBubble 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* タイマー表示 */
+.bonus-timer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  text-align: center;
+}
+
+.timer-text {
+  font-size: 0.9em;
+  font-weight: 700;
+  color: #333;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.9);
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.1em;
+}
+
+.btn-claim-mini {
+  padding: 10px 14px;
+  font-size: 1em;
+  font-weight: 700;
+  background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4);
+}
+
+.btn-claim-mini:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.6);
+}

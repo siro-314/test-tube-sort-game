@@ -1,0 +1,31 @@
+/* 注ぎアニメーション：移動元（上から消える） */
+@keyframes pourOut {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+/* 注ぎアニメーション：移動先（下から現れる） */
+@keyframes pourIn {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.tube-segment.pouring-out {
+  animation: pourOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.tube-segment.pouring-in {
+  animation: pourIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
