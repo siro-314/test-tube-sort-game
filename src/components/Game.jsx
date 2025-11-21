@@ -36,8 +36,15 @@ export function Game({ mode = GameMode.EASY, extraTubes = 0, onReturnToMenu }) {
       />
       
       {/* 空き試験管追加アイコン */}
-      {canUseExtraTube && gameState.extraTubes > 0 && (
-        <div className="extra-tube-icon" onClick={useExtraTube}>
+      {canUseExtraTube && (
+        <div 
+          className={`extra-tube-icon ${gameState.extraTubes === 0 ? 'disabled' : ''}`}
+          onClick={() => {
+            if (gameState.extraTubes > 0) {
+              useExtraTube();
+            }
+          }}
+        >
           <div className="tube-icon">🧪</div>
           <div className="badge">{gameState.extraTubes}</div>
         </div>

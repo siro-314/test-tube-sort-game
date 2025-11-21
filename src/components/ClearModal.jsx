@@ -98,9 +98,14 @@ export function ClearModal({ moves, stage, mode, clearTime, onNext, onRetry, onR
               タイトルに戻る
             </button>
           ) : (
-            <button className="btn btn-primary btn-large" onClick={handleNext}>
-              次のステージ
-            </button>
+            <>
+              <button className="btn btn-primary btn-large" onClick={handleNext}>
+                次のステージ
+              </button>
+              <button className="btn btn-secondary" onClick={handleReturnToMenu}>
+                タイトルに戻る
+              </button>
+            </>
           )}
           <button className="btn btn-secondary" onClick={handleRetry}>
             もう一度

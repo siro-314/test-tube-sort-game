@@ -110,7 +110,6 @@ function App() {
           <h1 className="game-title">試験管パズル</h1>
           
           <div className="mode-selection">
-            <h2>モードを選択</h2>
             <div className="mode-buttons">
               <ModeButton
                 title="イージー"
