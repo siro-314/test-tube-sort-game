@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/ClearModal.css';
 
-export function ClearModal({ moves, stage, onNext, onRetry }) {
+export function ClearModal({ moves, stage, mode, clearTime, onNext, onRetry, onReturnToMenu }) {
   const [confetti, setConfetti] = useState([]);
   const [isClosing, setIsClosing] = useState(false);
+  
+  const isRTAMode = mode === 'rta_easy' || mode === 'rta_hard';
   
   // 紙吹雪生成
   useEffect(() => {
@@ -37,6 +39,13 @@ export function ClearModal({ moves, stage, onNext, onRetry }) {
     }, 800);
   };
   
+  const handleReturnToMenu = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onReturnToMenu();
+    }, 800);
+  };
+  
   return (
     <div className="modal-overlay">
       {/* 紙吹雪 */}
@@ -59,19 +68,40 @@ export function ClearModal({ moves, stage, onNext, onRetry }) {
       <div className={`modal-content ${isClosing ? 'closing' : ''}`}>
         <h2 className="modal-title">🎉 ステージクリア！</h2>
         <div className="modal-stats">
-          <div className="stat-item">
-            <span className="stat-label">ステージ</span>
-            <span className="stat-value">{stage}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">移動回数</span>
-            <span className="stat-value">{moves}</span>
-          </div>
+          {isRTAMode ? (
+            <>
+              <div className="stat-item">
+                <span className="stat-label">クリアタイム</span>
+                <span className="stat-value">{(clearTime / 1000).toFixed(2)}秒</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">移動回数</span>
+                <span className="stat-value">{moves}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="stat-item">
+                <span className="stat-label">ステージ</span>
+                <span className="stat-value">{stage}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">移動回数</span>
+                <span className="stat-value">{moves}</span>
+              </div>
+            </>
+          )}
         </div>
         <div className="modal-actions">
-          <button className="btn btn-primary btn-large" onClick={handleNext}>
-            次のステージ
-          </button>
+          {isRTAMode ? (
+            <button className="btn btn-primary btn-large" onClick={handleReturnToMenu}>
+              タイトルに戻る
+            </button>
+          ) : (
+            <button className="btn btn-primary btn-large" onClick={handleNext}>
+              次のステージ
+            </button>
+          )}
           <button className="btn btn-secondary" onClick={handleRetry}>
             もう一度
           </button>

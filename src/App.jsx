@@ -159,6 +159,7 @@ function App() {
       <Game 
         mode={currentMode} 
         extraTubes={extraTubes}
+        onReturnToMenu={() => setCurrentMode(null)}
       />
     </div>
   );

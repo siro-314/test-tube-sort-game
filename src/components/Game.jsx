@@ -7,7 +7,7 @@ import { useGameState } from '../hooks/useGameState';
 import { GameMode } from '../domain/types';
 import '../styles/Game.css';
 
-export function Game({ mode = GameMode.EASY, extraTubes = 0 }) {
+export function Game({ mode = GameMode.EASY, extraTubes = 0, onReturnToMenu }) {
   const {
     gameState,
     selectedTube,
@@ -26,7 +26,7 @@ export function Game({ mode = GameMode.EASY, extraTubes = 0 }) {
         stage={gameState.stage}
         moves={gameState.moves}
         mode={gameState.mode}
-        onReset={resetStage}
+        onReset={onReturnToMenu}
       />
       
       <GameBoard
@@ -47,8 +47,11 @@ export function Game({ mode = GameMode.EASY, extraTubes = 0 }) {
         <ClearModal
           moves={gameState.moves}
           stage={gameState.stage}
+          mode={gameState.mode}
+          clearTime={gameState.startTime ? Date.now() - gameState.startTime : null}
           onNext={nextStage}
           onRetry={resetStage}
+          onReturnToMenu={onReturnToMenu}
         />
       )}
     </div>

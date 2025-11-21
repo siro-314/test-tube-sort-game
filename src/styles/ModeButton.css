@@ -146,3 +146,14 @@
   width: 420px;
   height: 75px;
 }
+
+/* スマホでの調整 */
+@media (max-width: 768px) {
+  .tube-button-body {
+    height: 81px; /* 90px * 0.9 */
+  }
+  
+  .rta-submenu .tube-button-body {
+    height: 67.5px; /* 75px * 0.9 */
+  }
+}

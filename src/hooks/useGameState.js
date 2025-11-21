@@ -57,9 +57,32 @@ export function useGameState(initialMode = GameMode.EASY, initialExtraTubes = 0)
   // クリア判定
   useEffect(() => {
     if (isGameCompleted(gameState.tubes)) {
-      setIsCompleted(true);
+      // RTAイージーの場合、3ステージ全クリアした時のみクリア演出を出す
+      if (gameState.mode === GameMode.RTA_EASY) {
+        const completedStages = [...(gameState.completedStages || []), gameState.stage];
+        if (completedStages.length >= 3) {
+          setIsCompleted(true);
+        } else {
+          // 1,2ステージ目はクリア演出なしで次のステージへ
+          const nextStageNum = completedStages.length + 1;
+          const tubeCount = calculateTubeCount(nextStageNum, gameState.mode);
+          const tubes = generateEasyStage(tubeCount);
+          
+          setGameState(prev => ({
+            ...prev,
+            tubes,
+            moves: prev.moves,
+            stage: nextStageNum,
+            completedStages
+          }));
+          setSelectedTube(null);
+        }
+      } else {
+        // 通常モードやRTAハードは従来通り
+        setIsCompleted(true);
+      }
     }
-  }, [gameState.tubes]);
+  }, [gameState.tubes, gameState.mode, gameState.stage, gameState.completedStages]);
 
   // 試験管を選択
   const selectTube = useCallback((index) => {
