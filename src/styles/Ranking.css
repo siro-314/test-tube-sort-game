@@ -112,6 +112,10 @@
 .name-col {
   width: auto;
   font-weight: 600;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .score-col {
@@ -182,6 +186,10 @@
 
   .rank-col {
     width: 60px;
+  }
+
+  .name-col {
+    max-width: 120px;
   }
 
   .score-col {

@@ -1,6 +1,7 @@
 // ランキング表示コンポーネント
 import React, { useState, useEffect } from 'react';
 import { fetchRankings } from '../services/rankingService';
+import { sanitizePlayerName } from '../utils/sanitize';
 import '../styles/Ranking.css';
 
 export function Ranking({ onBack }) {
@@ -84,7 +85,9 @@ export function Ranking({ onBack }) {
                   <td className="rank-col">
                     {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}位`}
                   </td>
-                  <td className="name-col">{entry.playerName}</td>
+                  <td className="name-col" title={entry.playerName}>
+                    {sanitizePlayerName(entry.playerName)}
+                  </td>
                   <td className="score-col">{formatTime(entry.time)}</td>
                   <td className="moves-col">{entry.moves}</td>
                 </tr>
