@@ -7,7 +7,7 @@
 /* スマホ・タブレット縦 */
 @media (max-width: 768px) {
   .daily-bonus-tube-container {
-    top: 140px;
+    top: 100px;
     right: 0px;
   }
   .bonus-tube-vertical {
@@ -19,7 +19,7 @@
 /* PC・タブレット横 */
 @media (min-width: 769px) {
   .daily-bonus-tube-container {
-    top: 170px;
+    top: 193px;
     right: 330px;
   }
   .bonus-tube-vertical {

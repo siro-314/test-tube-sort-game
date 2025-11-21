@@ -26,7 +26,7 @@ export function Game({ mode = GameMode.EASY, extraTubes = 0, onReturnToMenu }) {
         stage={gameState.stage}
         moves={gameState.moves}
         mode={gameState.mode}
-        onReset={onReturnToMenu}
+        onReset={resetStage}
       />
       
       <GameBoard

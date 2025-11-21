@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Game } from './components/Game';
 import { ModeButton } from './components/ModeButton';
 import { DailyBonusTube } from './components/DailyBonusTube';
+import { Ranking } from './components/Ranking';
 import { GameMode } from './domain/types';
 import { useDailyBonus } from './hooks/useDailyBonus';
 import './styles/App.css';
@@ -28,20 +29,7 @@ function App() {
           percentFilled={percentFilled}
         />
         
-        <div className="menu-screen">
-          <button 
-            className="btn btn-back"
-            onClick={() => setShowRanking(false)}
-          >
-            ← 戻る
-          </button>
-          
-          <h1 className="game-title">🏆 ランキング</h1>
-          
-          <div className="ranking-content">
-            <p>Coming Soon... トップ10のプレイヤーデータを表示予定</p>
-          </div>
-        </div>
+        <Ranking onBack={() => setShowRanking(false)} />
       </div>
     );
   }
