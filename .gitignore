@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+.netlify/
+
+# environment variables
+.env
+.env.local
+
+# Firebase service account (NEVER COMMIT THIS!)
+*firebase-adminsdk*.json
+
+# editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

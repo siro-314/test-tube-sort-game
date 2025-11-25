@@ -1,10 +1,23 @@
-// ランキング登録API（30日自動削除＋同一IP制限付き）
+import admin from 'firebase-admin';
 import { sanitizePlayerName } from '../../src/utils/sanitize.js';
 
-// IP制限用のメモリキャッシュ（Netlify Functionsは一定時間同じインスタンスを使い回す）
+// Firebase Admin初期化
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+    }),
+    databaseURL: process.env.FIREBASE_DATABASE_URL
+  });
+}
+
+const db = admin.database();
+
 const ipCache = new Map();
-const IP_LIMIT_WINDOW = 60 * 1000; // 1分間
-const IP_LIMIT_COUNT = 5; // 1分間に5回まで
+const IP_LIMIT_WINDOW = 60 * 1000;
+const IP_LIMIT_COUNT = 5;
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -27,19 +40,16 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // IP制限チェック
     const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
     const now = Date.now();
     
-    // IPごとのリクエスト履歴を確認
     if (ipCache.has(clientIp)) {
       const requests = ipCache.get(clientIp);
-      // 古いリクエストを削除
       const recentRequests = requests.filter(time => now - time < IP_LIMIT_WINDOW);
       
       if (recentRequests.length >= IP_LIMIT_COUNT) {
         return {
-          statusCode: 429, // Too Many Requests
+          statusCode: 429,
           headers,
           body: JSON.stringify({
             success: false,
@@ -57,10 +67,8 @@ exports.handler = async (event, context) => {
     const data = JSON.parse(event.body);
     let { playerName, score, mode, time, moves, stage } = data;
 
-    // プレイヤー名をサニタイズ（XSS対策）
     playerName = sanitizePlayerName(playerName);
 
-    // バリデーション
     if (!score || !mode) {
       return {
         statusCode: 400,
@@ -72,7 +80,6 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // タイムスタンプを追加（30日自動削除用）
     const timestamp = Date.now();
     
     const recordData = {
@@ -82,18 +89,44 @@ exports.handler = async (event, context) => {
       time: time || 0,
       moves: moves || 0,
       stage: stage || 1,
-      timestamp, // 記録日時（30日後に自動削除）
-      ip: clientIp.substring(0, 10) // デバッグ用（最初の10文字のみ保存）
+      timestamp
     };
 
-    // TODO: Firebaseに保存
-    // await firebase.database().ref(`rankings/${mode}`).push(recordData);
+    // Firebaseに保存
+    const ref = db.ref(`rankings/${mode}`);
+    await ref.push(recordData);
     
-    // 現在はダミーレスポンス
+    // 現在の順位を計算
+    const snapshot = await ref.once('value');
+    const allRecords = [];
+    snapshot.forEach(child => {
+      allRecords.push(child.val());
+    });
+    
+    // 30日以上古い記録を削除
+    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+    const validRecords = allRecords.filter(r => now - r.timestamp < THIRTY_DAYS);
+    
+    // ソート
+    if (mode.startsWith('rta')) {
+      validRecords.sort((a, b) => a.time - b.time);
+    } else {
+      validRecords.sort((a, b) => {
+        if (b.stage !== a.stage) return b.stage - a.stage;
+        return a.moves - b.moves;
+      });
+    }
+    
+    const rank = validRecords.findIndex(r => 
+      r.playerName === playerName && 
+      r.score === score && 
+      r.timestamp === timestamp
+    ) + 1;
+
     const result = {
       success: true,
-      rank: null, // Top10に入った場合のみ順位を返す（後で実装）
-      message: '記録を保存しました',
+      rank: rank <= 10 ? rank : null,
+      message: rank <= 10 ? `${rank}位に入りました！` : '記録を保存しました',
       expiresIn: '30日後に自動削除されます'
     };
 
