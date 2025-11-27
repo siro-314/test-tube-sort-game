@@ -2,11 +2,19 @@ import admin from 'firebase-admin';
 
 // Firebase Admin初期化
 if (!admin.apps.length) {
-  // FIREBASE_PRIVATE_KEYの改行処理
+  // FIREBASE_PRIVATE_KEYの処理
   let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
   
+  // Base64エンコードされている場合はデコード
+  if (!privateKey.includes('BEGIN PRIVATE KEY')) {
+    try {
+      privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
+    } catch (e) {
+      console.error('Failed to decode base64 private key:', e);
+    }
+  }
+  
   // リテラル文字列 "\\n" を実際の改行に変換
-  // Netlify環境変数では \n がリテラル文字列として保存されることがある
   if (privateKey.includes('\\n')) {
     privateKey = privateKey.split('\\n').join('\n');
   }
