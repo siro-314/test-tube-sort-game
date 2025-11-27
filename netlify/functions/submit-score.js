@@ -1,36 +1,8 @@
-import admin from 'firebase-admin';
+import { db } from './utils/firebase-init.js';
 import { sanitizePlayerName } from '../../src/utils/sanitize.js';
 
-// Firebase Admin初期化
-if (!admin.apps.length) {
-  // FIREBASE_PRIVATE_KEYの処理
-  let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-  
-  // Base64エンコードされている場合はデコード
-  if (!privateKey.includes('BEGIN PRIVATE KEY')) {
-    try {
-      privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
-    } catch (e) {
-      console.error('Failed to decode base64 private key:', e);
-    }
-  }
-  
-  // リテラル文字列 "\\n" を実際の改行に変換
-  if (privateKey.includes('\\n')) {
-    privateKey = privateKey.split('\\n').join('\n');
-  }
-  
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: privateKey
-    }),
-    databaseURL: process.env.FIREBASE_DATABASE_URL
-  });
-}
-
-const db = admin.database();
+// Firebase Admin初期化は utils/firebase-init.js に集約
+// これにより submit-score.js は「スコア登録」という本来の責任に集中できる（単一責任の原則）
 
 const ipCache = new Map();
 const IP_LIMIT_WINDOW = 60 * 1000;
@@ -59,11 +31,11 @@ exports.handler = async (event, context) => {
   try {
     const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
     const now = Date.now();
-    
+
     if (ipCache.has(clientIp)) {
       const requests = ipCache.get(clientIp);
       const recentRequests = requests.filter(time => now - time < IP_LIMIT_WINDOW);
-      
+
       if (recentRequests.length >= IP_LIMIT_COUNT) {
         return {
           statusCode: 429,
@@ -74,7 +46,7 @@ exports.handler = async (event, context) => {
           })
         };
       }
-      
+
       recentRequests.push(now);
       ipCache.set(clientIp, recentRequests);
     } else {
@@ -98,7 +70,7 @@ exports.handler = async (event, context) => {
     }
 
     const timestamp = Date.now();
-    
+
     const recordData = {
       playerName,
       score,
@@ -112,18 +84,18 @@ exports.handler = async (event, context) => {
     // Firebaseに保存
     const ref = db.ref(`rankings/${mode}`);
     await ref.push(recordData);
-    
+
     // 現在の順位を計算
     const snapshot = await ref.once('value');
     const allRecords = [];
     snapshot.forEach(child => {
       allRecords.push(child.val());
     });
-    
+
     // 30日以上古い記録を削除
     const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
     const validRecords = allRecords.filter(r => now - r.timestamp < THIRTY_DAYS);
-    
+
     // ソート
     if (mode.startsWith('rta')) {
       validRecords.sort((a, b) => a.time - b.time);
@@ -133,10 +105,10 @@ exports.handler = async (event, context) => {
         return a.moves - b.moves;
       });
     }
-    
-    const rank = validRecords.findIndex(r => 
-      r.playerName === playerName && 
-      r.score === score && 
+
+    const rank = validRecords.findIndex(r =>
+      r.playerName === playerName &&
+      r.score === score &&
       r.timestamp === timestamp
     ) + 1;
 

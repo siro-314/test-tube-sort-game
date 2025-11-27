@@ -1,35 +1,7 @@
-import admin from 'firebase-admin';
+import { db } from './utils/firebase-init.js';
 
-// Firebase Admin初期化
-if (!admin.apps.length) {
-  // FIREBASE_PRIVATE_KEYの処理
-  let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-  
-  // Base64エンコードされている場合はデコード
-  if (!privateKey.includes('BEGIN PRIVATE KEY')) {
-    try {
-      privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
-    } catch (e) {
-      console.error('Failed to decode base64 private key:', e);
-    }
-  }
-  
-  // リテラル文字列 "\\n" を実際の改行に変換
-  if (privateKey.includes('\\n')) {
-    privateKey = privateKey.split('\\n').join('\n');
-  }
-  
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: privateKey
-    }),
-    databaseURL: process.env.FIREBASE_DATABASE_URL
-  });
-}
-
-const db = admin.database();
+// Firebase Admin初期化は utils/firebase-init.js に集約
+// これにより get-rankings.js は「ランキング取得」という本来の責任に集中できる（単一責任の原則）
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -45,24 +17,24 @@ exports.handler = async (event, context) => {
 
   try {
     const mode = event.queryStringParameters?.mode || 'easy';
-    
+
     // Firebaseから取得
     const snapshot = await db.ref(`rankings/${mode}`).once('value');
     let rankings = [];
-    
+
     snapshot.forEach(child => {
       rankings.push(child.val());
     });
-    
+
     // 30日以上古い記録を自動削除
     const now = Date.now();
     const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
-    
+
     rankings = rankings.filter(record => {
       const age = now - record.timestamp;
       return age < THIRTY_DAYS;
     });
-    
+
     // ソート
     if (mode.startsWith('rta')) {
       rankings.sort((a, b) => a.time - b.time);
@@ -72,7 +44,7 @@ exports.handler = async (event, context) => {
         return a.moves - b.moves;
       });
     }
-    
+
     // Top10のみ返す
     rankings = rankings.slice(0, 10);
 
