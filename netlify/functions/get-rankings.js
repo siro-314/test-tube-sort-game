@@ -2,11 +2,18 @@ import admin from 'firebase-admin';
 
 // Firebase Admin初期化
 if (!admin.apps.length) {
+  // FIREBASE_PRIVATE_KEYの二重エスケープに対応
+  let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+  // まず\\nを\nに変換（Netlify UIからのインポートで発生する二重エスケープ対策）
+  privateKey = privateKey.replace(/\\\\n/g, '\\n');
+  // 次に\nを実際の改行に変換
+  privateKey = privateKey.replace(/\\n/g, '\n');
+  
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      privateKey: privateKey
     }),
     databaseURL: process.env.FIREBASE_DATABASE_URL
   });
