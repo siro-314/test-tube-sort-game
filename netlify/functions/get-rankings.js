@@ -2,12 +2,14 @@ import admin from 'firebase-admin';
 
 // Firebase Admin初期化
 if (!admin.apps.length) {
-  // FIREBASE_PRIVATE_KEYの二重エスケープに対応
+  // FIREBASE_PRIVATE_KEYの改行処理
   let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-  // まず\\nを\nに変換（Netlify UIからのインポートで発生する二重エスケープ対策）
-  privateKey = privateKey.replace(/\\\\n/g, '\\n');
-  // 次に\nを実際の改行に変換
-  privateKey = privateKey.replace(/\\n/g, '\n');
+  
+  // リテラル文字列 "\\n" を実際の改行に変換
+  // Netlify環境変数では \n がリテラル文字列として保存されることがある
+  if (privateKey.includes('\\n')) {
+    privateKey = privateKey.split('\\n').join('\n');
+  }
   
   admin.initializeApp({
     credential: admin.credential.cert({
