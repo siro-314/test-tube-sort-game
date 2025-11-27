@@ -22,13 +22,6 @@ function App() {
   if (showRanking) {
     return (
       <div className="app">
-        <DailyBonusTube
-          canClaim={canClaim}
-          onClaim={claim}
-          timeUntilNext={timeUntilNext}
-          percentFilled={percentFilled}
-        />
-        
         <Ranking onBack={() => setShowRanking(false)} />
       </div>
     );

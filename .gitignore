@@ -8,6 +8,7 @@ dist/
 # environment variables
 .env
 .env.local
+netlify-env-vars.txt
 
 # Firebase service account (NEVER COMMIT THIS!)
 *firebase-adminsdk*.json
