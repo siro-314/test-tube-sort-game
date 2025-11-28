@@ -4,17 +4,28 @@ import admin from 'firebase-admin';
 // これにより、将来的な修正（例：環境変数の扱い変更など）が一箇所で済むようにする
 if (!admin.apps.length) {
   // FIREBASE_PRIVATE_KEYの処理
-  let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+  // 優先順位: FIREBASE_PRIVATE_KEY_BASE64 > FIREBASE_PRIVATE_KEY
+  // 疎結合性: 複数の環境変数形式に対応し、デプロイ環境の違いを吸収
+  let privateKey = '';
   
-  // Base64エンコードされている場合はデコード
-  // 疎結合性: 環境変数の形式（生テキスト or Base64）に関わらず動作するようにチェックを入れる
-  if (!privateKey.includes('BEGIN PRIVATE KEY')) {
+  if (process.env.FIREBASE_PRIVATE_KEY_BASE64) {
+    // Base64エンコード専用の環境変数（改行問題の回避策）
     try {
-      privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
+      privateKey = Buffer.from(process.env.FIREBASE_PRIVATE_KEY_BASE64, 'base64').toString('utf-8');
     } catch (e) {
-      console.error('Failed to decode base64 private key:', e);
-      // ここでエラーを投げると、呼び出し元でハンドリングが必要になるが、
-      // 秘密鍵が壊れている場合はそもそも動作しないので、ログを出して続行（Firebase初期化で落ちる）させる
+      console.error('Failed to decode FIREBASE_PRIVATE_KEY_BASE64:', e);
+    }
+  } else if (process.env.FIREBASE_PRIVATE_KEY) {
+    // 従来の環境変数（後方互換性）
+    privateKey = process.env.FIREBASE_PRIVATE_KEY;
+    
+    // Base64エンコードされている場合はデコード
+    if (!privateKey.includes('BEGIN PRIVATE KEY')) {
+      try {
+        privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
+      } catch (e) {
+        console.error('Failed to decode base64 private key:', e);
+      }
     }
   }
   
