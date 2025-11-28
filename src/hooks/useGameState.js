@@ -191,7 +191,7 @@ export function useGameState(initialMode = GameMode.EASY, initialExtraTubes = 0)
         moves: 0,
         stage: stageNum,
         mode: gameState.mode,
-        extraTubes: 0,
+        extraTubes: gameState.extraTubes, // リセット時もアイテム数を保持
         startTime: Date.now(),
         completedStages: []
       });
